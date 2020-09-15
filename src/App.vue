@@ -1,19 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <OrgChart />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import OrgChart from "./components/OrgChart.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    OrgChart,
+  },
+};
 </script>
 
 <style>

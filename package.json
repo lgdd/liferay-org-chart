@@ -1,15 +1,22 @@
 {
   "name": "liferay-org-chart",
+  "description": "Organizational Chart",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build:liferay": "lnbs-build",
+    "deploy:liferay": "yarn run build:liferay && lnbs-deploy"
   },
   "dependencies": {
+    "axios": "^0.20.0",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "generator-liferay-js": "^2.19.1",
+    "global": "^4.4.0",
+    "vue": "^2.6.11",
+    "vue-organization-chart": "^1.1.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -18,6 +25,9 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "liferay-npm-build-support": "^2.19.1",
+    "liferay-npm-bundler": "^2.19.1",
+    "liferay-npm-bundler-preset-vue-cli": "^2.19.1",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -38,5 +48,12 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "portlet": {
+    "com.liferay.portlet.display-category": "category.sample",
+    "javax.portlet.name": "liferayorgchart",
+    "javax.portlet.security-role-ref": "power-user,user",
+    "javax.portlet.resource-bundle": "content.Language",
+    "com.liferay.portlet.instanceable": true
+  }
 }
