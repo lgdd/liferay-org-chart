@@ -1,28 +1,43 @@
 <template>
   <div>
-    <div v-if="ds == null && !error">
-      <span aria-hidden="true" class="loading-animation"></span>
-    </div>
-    <div v-else-if="error">
-      <div class="alert alert-danger" role="alert">
-        <span class="alert-indicator"></span>
-        {{ errorMessage }}
-      </div>
+    <div v-if="notInLiferay">
+      <p>
+        Please deploy this as a <b>Remote App</b> in Liferay using the
+        <i>Custom Element</i> option with the name <i>liferay-org-chart</i>.
+      </p>
+      <p>Learn more about&nbsp;
+        <a
+          href="https://learn.liferay.com/dxp/latest/en/building-applications/remote-apps/remote-apps-tutorials/creating-a-basic-remote-app.html#registering-the-application-with-remote-apps"
+          target="_blank"
+        >
+          registering an application with remote apps
+        </a>.
+      </p>
     </div>
     <div v-else>
-      <organization-chart
-        :datasource="ds"
-        :pan="options.pan"
-        :zoom="options.zoom"
-        :zoomin-limit="options.zoomin_limmit"
-        :zoomout-limit="options.zoomout_limit"
-      ></organization-chart>
+      <div v-if="ds == null && !error">
+        <span aria-hidden="true" class="loading-animation"></span>
+      </div>
+      <div v-else-if="error">
+        <div class="alert alert-danger" role="alert">
+          <span class="alert-indicator"></span>
+          {{ errorMessage }}
+        </div>
+      </div>
+      <div v-else>
+        <organization-chart
+          :datasource="ds"
+          :pan="options.pan"
+          :zoom="options.zoom"
+          :zoomin-limit="options.zoomin_limmit"
+          :zoomout-limit="options.zoomout_limit"
+        ></organization-chart>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import OrganizationChart from "vue-organization-chart";
 import "./OrgChart.css";
 
@@ -45,24 +60,19 @@ export default {
       },
       error: false,
       errorMessage: null,
+      notInLiferay: typeof window["Liferay"] === "undefined",
     };
   },
   async mounted() {
-    const host = process.env.VUE_APP_LIFERAY_HOST;
-    const username = process.env.VUE_APP_LIFERAY_USERNAME;
-    const password = process.env.VUE_APP_LIFERAY_PASSWORD;
     const organizations = [];
 
-    const response = await axios({
-      method: "GET",
-      url: `${host}/o/headless-admin-user/v1.0/organizations`,
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+    const response = await window["Liferay"].Util.fetch(
+      `/o/headless-admin-user/v1.0/organizations`,
+      { method: "GET" }
+    );
+    const data = await response.json();
 
-    for (const org of response.data.items) {
+    for (const org of data.items) {
       const { id, name } = org;
       const children = [];
       const users = await this.getChildrenUsers(org);
@@ -91,20 +101,14 @@ export default {
   },
   methods: {
     async getChildrenUsers(parentOrg) {
-      const host = process.env.VUE_APP_LIFERAY_HOST;
-      const username = process.env.VUE_APP_LIFERAY_USERNAME;
-      const password = process.env.VUE_APP_LIFERAY_PASSWORD;
       const { id } = parentOrg;
       const children = [];
-      const response = await axios({
-        method: "GET",
-        url: `${host}/o/headless-admin-user/v1.0/organizations/${id}/user-accounts`,
-        auth: {
-          username: username,
-          password: password,
-        },
-      });
-      for (const user of response.data.items) {
+      const response = await window["Liferay"].Util.fetch(
+        `/o/headless-admin-user/v1.0/organizations/${id}/user-accounts`,
+        { method: "GET" }
+      );
+      const data = await response.json();
+      for (const user of data.items) {
         const { id, name, jobTitle } = user;
 
         const isNotExcluded = await this.isNotExcluded(name);
@@ -120,20 +124,16 @@ export default {
       return children;
     },
     async getChildrenOrgs(parentOrg) {
-      const host = process.env.VUE_APP_LIFERAY_HOST;
-      const username = process.env.VUE_APP_LIFERAY_USERNAME;
-      const password = process.env.VUE_APP_LIFERAY_PASSWORD;
       const { id } = parentOrg;
       const children = [];
-      const response = await axios({
-        method: "GET",
-        url: `${host}/o/headless-admin-user/v1.0/organizations/${id}/organizations`,
-        auth: {
-          username: username,
-          password: password,
-        },
-      });
-      for (const org of response.data.items) {
+
+      const response = await window["Liferay"].Util.fetch(
+        `/o/headless-admin-user/v1.0/organizations/${id}/organizations`,
+        { method: "GET" }
+      );
+      const data = await response.json();
+
+      for (const org of data.items) {
         const { id, name, numberOfOrganizations } = org;
         const subChildren = [];
 
@@ -165,9 +165,8 @@ export default {
     },
     async isNotExcluded(fullName) {
       const names = fullName.toLowerCase().split(" ");
-      const excludedNames = process.env.VUE_APP_LIFERAY_EXCLUDED_NAMES.split(
-        ","
-      );
+      const excludedNames =
+        process.env.VUE_APP_LIFERAY_EXCLUDED_NAMES.split(",");
 
       return !names.some((name) => excludedNames.includes(name));
     },
