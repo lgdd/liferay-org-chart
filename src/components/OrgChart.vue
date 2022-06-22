@@ -5,13 +5,18 @@
         Please deploy this as a <b>Remote App</b> in Liferay using the
         <i>Custom Element</i> option with the name <i>liferay-org-chart</i>.
       </p>
-      <p>Learn more about&nbsp;
+      <p>
+        You will need 2 URLs that you can find with your browser <i>Dev Tools</i> under <i>Network</i>.
+        Look for <i>app.*.js</i> and <i>chunk-vendors.*.js</i>.
+      </p>
+      <p>
+        Learn more about&nbsp;
         <a
           href="https://learn.liferay.com/dxp/latest/en/building-applications/remote-apps/remote-apps-tutorials/creating-a-basic-remote-app.html#registering-the-application-with-remote-apps"
           target="_blank"
         >
-          registering an application with remote apps
-        </a>.
+          registering an application with remote apps </a
+        >.
       </p>
     </div>
     <div v-else>
