@@ -7,7 +7,7 @@
       </p>
       <p>
         You will need 2 URLs that you can find with your browser <i>Dev Tools</i> under <i>Network</i>.
-        Look for <i>app.*.js</i> and <i>chunk-vendors.*.js</i>.
+        Look for <i>app.*.js</i>, <i>chunk-vendors.*.js</i> and <i>app.*.css</i>.
       </p>
       <p>
         Learn more about&nbsp;
